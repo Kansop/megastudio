@@ -101,3 +101,5 @@ body.collapsed .search-btn::before{content:"🔎"}
 }
 @media (max-width:560px){.split{flex-direction:column}.list-pane{width:auto;max-height:34vh;border-right:0;border-bottom:1px solid var(--line)}}
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px;border:2px solid transparent;background-clip:padding-box}
+@media (max-width:820px){.inbox-split>div:first-child{display:none!important}}
+@media (max-width:560px){.inbox-split>div:nth-child(2){width:auto!important;max-height:40vh;border-right:0!important;border-bottom:1px solid var(--line)}}
