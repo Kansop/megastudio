@@ -20,7 +20,7 @@
     const kd = (e) => { if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault(); keys[e.key] = true; api.key && api.key(e.key); };
     const ku = (e) => (keys[e.key] = false);
     document.addEventListener('keydown', kd); document.addEventListener('keyup', ku);
-    let raf, last = performance.now(); const loop = (t) => { raf = requestAnimationFrame(loop); const dt = Math.min(0.05, (t - last) / 1000); last = t; api.update && api.update(dt); api.draw && api.draw(); };
+    let raf, last = performance.now(); const loop = (t) => { raf = requestAnimationFrame(loop); const dt = Math.max(0, Math.min(0.05, (t - last) / 1000)); last = t; api.update && api.update(dt); api.draw && api.draw(); };
     raf = requestAnimationFrame(loop);
     return () => { cancelAnimationFrame(raf); document.removeEventListener('keydown', kd); document.removeEventListener('keyup', ku); };
   }
