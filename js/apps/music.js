@@ -1,4 +1,4 @@
-/* Music Studio: drum machine + melodic step sequencer + live keyboard synth, WebAudio, WAV export */
+/* Music Studio: drum machine + melodic step sequencer + live keyboard synth, mixer (mute/solo/volume), live recording, Web MIDI input, Euclidean rhythms, genre presets, WAV + MIDI export */
 (function () {
   const { h } = MS;
   const STEPS = 16;
@@ -46,12 +46,17 @@
     const comp = ac.createDynamicsCompressor(); master.connect(comp).connect(ac.destination);
     const dl = ac.createDelay(1); dl.delayTime.value = (60 / st.bpm) * 0.75; const fb = ac.createGain(); fb.gain.value = st.delay; const wet = ac.createGain(); wet.gain.value = st.delay ? 0.5 : 0;
     const synthBus = ac.createGain(); synthBus.connect(master); synthBus.connect(dl); dl.connect(fb).connect(dl); dl.connect(wet).connect(master);
-    return { master, synthBus, comp };
+    const mix = st.mix || {}; const anySolo = ['drums', 'mel', 'bass'].some((k) => mix[k]?.solo);
+    const lvl = (k) => { const m = mix[k] || {}; return m.mute || (anySolo && !m.solo) ? 0 : m.vol ?? 1; };
+    const drums = ac.createGain(); drums.gain.value = lvl('drums'); drums.connect(master);
+    const lead = ac.createGain(); lead.gain.value = lvl('mel'); lead.connect(synthBus);
+    const bass = ac.createGain(); bass.gain.value = lvl('bass'); bass.connect(synthBus);
+    return { master, synthBus, comp, drums, lead, bass, lvl };
   }
   function schedulePattern(ac, bus, st, pat, t0) {
-    const v = voices(ac, bus.master); const sd = 60 / st.bpm / 4;
+    const v = voices(ac, bus.drums); const sd = 60 / st.bpm / 4;
     for (let s = 0; s < STEPS; s++) { const t = t0 + s * sd + (s % 2 ? st.swing * sd * 0.5 : 0);
-      pat.drums.forEach((row, i) => row[s] && v.drum(i, t)); pat.mel.forEach((row, r) => row[s] && synthNote(ac, bus.synthBus, midiFreq(rowMidi(st, r, 5)), t, sd * 1.8, st)); pat.bass.forEach((row, r) => row[s] && synthNote(ac, bus.synthBus, midiFreq(rowMidi(st, r, 3)), t, sd * 1.5, st, true)); }
+      pat.drums.forEach((row, i) => row[s] && v.drum(i, t)); pat.mel.forEach((row, r) => row[s] && synthNote(ac, bus.lead, midiFreq(rowMidi(st, r, 5)), t, sd * 1.8, st)); pat.bass.forEach((row, r) => row[s] && synthNote(ac, bus.bass, midiFreq(rowMidi(st, r, 3)), t, sd * 1.5, st, true)); }
     return STEPS * sd;
   }
   function wav(buf) {
@@ -75,14 +80,14 @@
         const g = h('div', { style: { display: 'grid', gridTemplateColumns: `110px repeat(${STEPS}, minmax(22px, 1fr))`, gap: '3px' } });
         cells[kind] = [];
         for (let r = 0; r < rows; r++) {
-          const lbl = h('div.small', { style: { alignSelf: 'center', whiteSpace: 'nowrap', overflow: 'hidden', cursor: kind === 'drums' ? 'pointer' : '' }, on: { click: () => { if (kind === 'drums') { ensureAC(); voices(ac, bus.master).drum(r, ac.currentTime); } else { ensureAC(); synthNote(ac, bus.synthBus, midiFreq(rowMidi(st, r, kind === 'mel' ? 5 : 3)), ac.currentTime, 0.4, st, kind === 'bass'); } } } }, labelFn(r));
+          const lbl = h('div.small', { style: { alignSelf: 'center', whiteSpace: 'nowrap', overflow: 'hidden', cursor: kind === 'drums' ? 'pointer' : '' }, on: { click: () => { if (kind === 'drums') { ensureAC(); voices(ac, bus.drums).drum(r, ac.currentTime); } else { ensureAC(); synthNote(ac, kind === 'mel' ? bus.lead : bus.bass, midiFreq(rowMidi(st, r, kind === 'mel' ? 5 : 3)), ac.currentTime, 0.4, st, kind === 'bass'); } } } }, labelFn(r));
           g.append(lbl); cells[kind][r] = [];
           for (let c = 0; c < STEPS; c++) { const b = h('button', { 'aria-label': `${kind} ${r} step ${c + 1}`, style: { height: kind === 'drums' ? '28px' : '20px', borderRadius: '5px', border: '1px solid var(--line)', cursor: 'pointer', background: c % 4 === 0 ? 'var(--panel2)' : 'var(--panel)' }, on: { mousedown: (e) => { e.preventDefault(); toggle(kind, r, c); paintMode = pat()[kind][r][c]; } , mouseenter: (e) => { if (e.buttons === 1 && paintMode !== null && pat()[kind][r][c] !== paintMode) toggle(kind, r, c); } } }); b.dataset.color = color; cells[kind][r][c] = b; g.append(b); }
         }
         return g;
       };
       let paintMode = null; const mu = () => (paintMode = null); addEventListener('mouseup', mu);
-      const toggle = (kind, r, c) => { pat()[kind][r][c] = pat()[kind][r][c] ? 0 : 1; s.touch(); paintCell(kind, r, c); if (pat()[kind][r][c] && !playing) { ensureAC(); if (kind === 'drums') voices(ac, bus.master).drum(r, ac.currentTime); else synthNote(ac, bus.synthBus, midiFreq(rowMidi(st, r, kind === 'mel' ? 5 : 3)), ac.currentTime, 0.3, st, kind === 'bass'); } };
+      const toggle = (kind, r, c) => { pat()[kind][r][c] = pat()[kind][r][c] ? 0 : 1; s.touch(); paintCell(kind, r, c); if (pat()[kind][r][c] && !playing) { ensureAC(); if (kind === 'drums') voices(ac, bus.drums).drum(r, ac.currentTime); else synthNote(ac, kind === 'mel' ? bus.lead : bus.bass, midiFreq(rowMidi(st, r, kind === 'mel' ? 5 : 3)), ac.currentTime, 0.3, st, kind === 'bass'); } };
       const paintCell = (kind, r, c) => { const b = cells[kind][r][c]; const on = pat()[kind][r][c]; b.style.background = on ? b.dataset.color : c % 4 === 0 ? 'var(--panel2)' : 'var(--panel)'; b.style.boxShadow = on ? `0 0 10px ${b.dataset.color}88` : ''; };
       const paintAll = () => ['drums', 'mel', 'bass'].forEach((k) => cells[k].forEach((row, r) => row.forEach((_, c) => paintCell(k, r, c))));
       const noteLabel = (r, oct) => { const m = rowMidi(st, r, oct); return NOTE_NAMES[m % 12] + (Math.floor(m / 12) - 1); };
@@ -108,22 +113,46 @@
       const kb = h('div', { style: { display: 'flex', height: '110px', position: 'relative', userSelect: 'none' } });
       const KEYMAP = 'awsedftgyhujkolp;'; const pressed = new Set();
       for (let i = 0; i < 17; i++) { const isBlack = [1, 3, 6, 8, 10].includes(i % 12); const k = h('div', { 'data-i': i, style: isBlack ? { width: '26px', height: '66px', background: '#111', marginLeft: '-13px', marginRight: '-13px', zIndex: 2, borderRadius: '0 0 5px 5px', cursor: 'pointer', position: 'relative', color: '#aaa', fontSize: '10px', textAlign: 'center' } : { flex: 1, background: '#f6f6f6', border: '1px solid #bbb', borderRadius: '0 0 7px 7px', cursor: 'pointer', color: '#888', fontSize: '11px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '4px' }, on: { pointerdown: () => keyNote(i) } }, KEYMAP[i].toUpperCase()); kb.append(k); }
-      const keyNote = (i) => { ensureAC(); synthNote(ac, bus.synthBus, midiFreq(60 + st.root + i), ac.currentTime, 0.6, st); const el = kb.children[i]; el.style.filter = 'brightness(.7)'; setTimeout(() => (el.style.filter = ''), 150); };
+      let keyNote = (i) => { ensureAC(); synthNote(ac, bus.synthBus, midiFreq(60 + st.root + i), ac.currentTime, 0.6, st); const el = kb.children[i]; el.style.filter = 'brightness(.7)'; setTimeout(() => (el.style.filter = ''), 150); };
       const onKey = (e) => { if (/^(input|textarea|select)$/i.test(e.target.tagName) || e.ctrlKey || e.metaKey || e.altKey) return; if (e.code === 'Space') { e.preventDefault(); playing ? stop() : play(); return; } const i = KEYMAP.indexOf(e.key.toLowerCase()); if (i >= 0 && !pressed.has(i)) { pressed.add(i); keyNote(i); } };
       const onKeyUp = (e) => pressed.delete(KEYMAP.indexOf(e.key.toLowerCase()));
       document.addEventListener('keydown', onKey); document.addEventListener('keyup', onKeyUp);
+      /* ---- mixer ---- */
+      st.mix = st.mix || { drums: { vol: 1 }, mel: { vol: 1 }, bass: { vol: 1 } };
+      const applyMix = () => { if (!bus) return; bus.drums.gain.value = bus.lvl('drums'); bus.lead.gain.value = bus.lvl('mel'); bus.bass.gain.value = bus.lvl('bass'); };
+      const mixer = h('div.row', { style: { gap: '18px', flexWrap: 'wrap' } }, [['drums', '🥁 Drums'], ['mel', '🎹 Lead'], ['bass', '🎸 Bass']].map(([k, l]) => { const m = st.mix[k]; const mb = h('button.btn.sm', { class: m.mute ? 'on' : '', title: 'Mute', on: { click: () => { m.mute = !m.mute; mb.classList.toggle('on', m.mute); s.touch(); applyMix(); } } }, 'M'); const sb = h('button.btn.sm', { class: m.solo ? 'on' : '', title: 'Solo', on: { click: () => { m.solo = !m.solo; sb.classList.toggle('on', m.solo); s.touch(); applyMix(); } } }, 'S'); return h('div.row', { style: { gap: '6px' } }, h('span.small', { style: { width: '64px' } }, l), h('input', { type: 'range', min: 0, max: 1.5, step: 0.05, value: m.vol ?? 1, style: { width: '90px' }, on: { input: (e) => { m.vol = +e.target.value; s.touch(); applyMix(); } } }), mb, sb); }));
+      /* ---- live recording into the lead grid ---- */
+      let recording = false, curStep = 0; const recBtn = h('button.btn', { title: 'While playing, notes you play on the keyboard are written into the lead grid (snapped to the scale)', on: { click: () => { recording = !recording; recBtn.classList.toggle('on', recording); recBtn.textContent = recording ? '⏺ Recording' : '⏺ Record'; if (recording && !playing) play(); } } }, '⏺ Record');
+      const recordNote = (midi) => { if (!recording || !playing) return; let best = 0, bd = 99; for (let r = 0; r < ROWS_MEL; r++) { const m = rowMidi(st, r, 5); const d = Math.min(...[-24, -12, 0, 12, 24].map((o) => Math.abs(m - (midi + o)))); if (d < bd) { bd = d; best = r; } } pat().mel[best][curStep] = 1; s.touch(); paintCell('mel', best, curStep); };
+      const origKeyNote = keyNote; keyNote = (i) => { origKeyNote(i); recordNote(60 + st.root + i); };
+      /* ---- Web MIDI input ---- */
+      let midiAccess = null; const midiBtn = h('button.btn', { title: 'Connect a USB/Bluetooth MIDI keyboard', on: { click: async () => { if (!navigator.requestMIDIAccess) return MS.toast('Web MIDI is not supported in this browser'); try { midiAccess = await navigator.requestMIDIAccess(); let n = 0; midiAccess.inputs.forEach((inp) => { n++; inp.onmidimessage = (e) => { const [cmd, note, vel] = e.data; if ((cmd & 0xf0) === 0x90 && vel > 0) { ensureAC(); synthNote(ac, bus.lead, midiFreq(note), ac.currentTime, 0.6, st); recordNote(note); } }; }); MS.toast(n ? `🎹 ${n} MIDI device(s) connected` : 'No MIDI devices found', n ? 'good' : ''); midiBtn.classList.toggle('on', n > 0); } catch (e) { MS.toast('MIDI permission denied', 'bad'); } } } }, '🎛 MIDI in');
+      /* ---- Euclidean rhythm generator ---- */
+      const euclid = (k, n, rot = 0) => { const out = []; let b = 0; for (let i = 0; i < n; i++) { const nb = Math.floor(((i + 1) * k) / n); out.push(nb > b ? 1 : 0); b = nb; } return out.map((_, i) => out[(i - rot + n * 4) % n]); };
+      const euclidDlg = () => { let close; const row = h('select.input', DRUMS.map((d, i) => h('option', { value: i }, d))); const hits = h('input', { type: 'range', min: 0, max: 16, value: 5 }); const rot = h('input', { type: 'range', min: 0, max: 15, value: 0 }); const prev = h('div.mono', { style: { letterSpacing: '3px', fontSize: '18px' } }); const upd = () => (prev.textContent = euclid(+hits.value, STEPS, +rot.value).map((x) => (x ? '●' : '·')).join('')); hits.oninput = rot.oninput = upd; upd();
+        close = MS.modal(h('div.col', h('h2', '⚙ Euclidean rhythm'), h('p.small.muted', 'Spreads N hits as evenly as possible over 16 steps — the math behind lots of world-music grooves.'), h('label.col.small', 'Drum', row), h('label.col.small', 'Hits', hits), h('label.col.small', 'Rotate', rot), prev, h('button.btn.primary', { on: { click: () => { pat().drums[+row.value] = euclid(+hits.value, STEPS, +rot.value); s.touch(); paintAll(); close(); } } }, 'Apply'))); };
+      /* ---- genre presets ---- */
+      const P = (str) => [...str.replace(/\s/g, '')].map((c) => (c === 'x' ? 1 : 0));
+      const PRESETS = { 'House': { bpm: 124, d: ['x...x...x...x...', '....x.......x...', '................', '..x...x...x...x.', '......x.......x.', '................', '................', '................'] }, 'Hip-hop': { bpm: 90, d: ['x......x..x.....', '....x.......x...', '................', 'x.x.x.x.x.x.x.x.', '................', '..............x.', '.......x........', '................'] }, 'Trap': { bpm: 140, d: ['x.........x.....', '........x.......', '........x.......', 'xxxxxxx.xxxxx.xx', '................', '................', '................', '................'] }, 'Reggaeton': { bpm: 96, d: ['x...x...x...x...', '...x..x....x..x.', '................', 'x.x.x.x.x.x.x.x.', '................', '................', '...x..x....x..x.', '................'] }, 'Drum & bass': { bpm: 172, d: ['x.........x.....', '....x.......x...', '................', 'x.xxx.xxx.xxx.xx', '................', '.......x........', '................', '................'] }, 'Disco': { bpm: 118, d: ['x...x...x...x...', '....x.......x...', '....x.......x...', 'x.x.x.x.x.x.x.x.', '..x...x...x...x.', '................', '................', '.........x......'] } };
+      const presetSel = h('select.input', { on: { change: () => { const pr = PRESETS[presetSel.value]; if (!pr) return; pat().drums = pr.d.map(P); st.bpm = pr.bpm; bpm.value = pr.bpm; s.touch(); rebuildBus(); paintAll(); presetSel.value = ''; MS.toast('Loaded drum groove'); } } }, h('option', { value: '' }, '🥁 Groove presets…'), Object.keys(PRESETS).map((k) => h('option', { value: k }, k + ' · ' + PRESETS[k].bpm + ' BPM')));
+      /* ---- MIDI file export ---- */
+      function exportMidi() { const seq = st.chain || st.current; const TPQ = 96, stepT = TPQ / 4; const evs = []; let base = 0; for (const k of seq) { const p = st.patterns[k]; const DRUM_NOTES = [36, 38, 39, 42, 46, 45, 37, 56]; for (let c = 0; c < STEPS; c++) { const t = base + c * stepT; p.drums.forEach((row, i) => row[c] && evs.push([t, 0x99, DRUM_NOTES[i], 100], [t + stepT / 2, 0x89, DRUM_NOTES[i], 0])); p.mel.forEach((row, r) => { if (row[c]) { const n = rowMidi(st, r, 5); evs.push([t, 0x90, n, 90], [t + stepT * 2 - 1, 0x80, n, 0]); } }); p.bass.forEach((row, r) => { if (row[c]) { const n = rowMidi(st, r, 3); evs.push([t, 0x91, n, 100], [t + stepT * 1.5, 0x81, n, 0]); } }); } base += STEPS * stepT; }
+        evs.sort((a, b) => a[0] - b[0] || (a[1] & 0xf0) - (b[1] & 0xf0)); const bytes = []; const vlq = (v) => { v = Math.max(0, Math.round(v)); const out = [v & 0x7f]; while ((v >>= 7)) out.unshift((v & 0x7f) | 0x80); return out; }; const tempo = Math.round(60e6 / st.bpm);
+        bytes.push(0, 0xff, 0x51, 3, (tempo >> 16) & 255, (tempo >> 8) & 255, tempo & 255, 0, 0xc0, [81, 30, 38, 62][['sawtooth', 'square', 'triangle', 'sine'].indexOf(st.wave)] ?? 81, 0, 0xc1, 38); let last = 0; evs.forEach(([t, st0, n, v]) => { bytes.push(...vlq(t - last), st0, n, v); last = t; }); bytes.push(0, 0xff, 0x2f, 0);
+        const hdr = [0x4d, 0x54, 0x68, 0x64, 0, 0, 0, 6, 0, 0, 0, 1, (TPQ >> 8) & 255, TPQ & 255]; const L = bytes.length; const trk = [0x4d, 0x54, 0x72, 0x6b, (L >> 24) & 255, (L >> 16) & 255, (L >> 8) & 255, L & 255]; MS.download('megastudio-beat.mid', new Uint8Array([...hdr, ...trk, ...bytes]), 'audio/midi'); MS.toast('Exported MIDI — open it in any DAW', 'good'); }
       view.append(h('div.pad.col', { style: { gap: '14px', maxWidth: '1200px' } },
         h('div.card.row', { style: { flexWrap: 'wrap', gap: '14px', alignItems: 'flex-end' } }, playBtn, ctl('BPM', bpm), ctl('Swing', swing), ctl('Scale', scale), ctl('Key', root), ctl('Wave', wave), ctl('Filter', cutoff), ctl('Delay', delay), ctl('Volume', vol), ctl('Pattern', h('div.row', patBtns)), ctl('Song chain', chain)),
+        h('div.card.row', { style: { flexWrap: 'wrap', gap: '14px' } }, h('strong', '🎚 Mixer'), mixer, h('div.spacer'), recBtn, midiBtn, h('button.btn', { on: { click: euclidDlg } }, '⚙ Euclid'), presetSel),
         viz, gridsWrap, h('div.card', h('div.row', { style: { marginBottom: '8px' } }, h('strong', '🎼 Live keyboard'), h('span.small.muted', 'play with A W S E D F T G Y H U J K O L P ; · Space = play/stop')), kb)));
       MS.setActions(h('button.btn', { on: { click: () => { const k = st.current; st.patterns[k] = blank(); s.touch(); paintAll(); } } }, 'Clear pattern'),
         h('button.btn', { on: { click: () => { const p = pat(); p.drums.forEach((r) => r.forEach((_, i) => (r[i] = Math.random() < [0.3, 0.15, 0.08, 0.5, 0.06, 0.08, 0.1, 0.05][p.drums.indexOf(r)] ? 1 : 0))); p.drums[0][0] = 1; p.mel.forEach((r) => r.fill(0)); for (let i = 0; i < STEPS; i++) if (Math.random() < 0.45) p.mel[(Math.random() * ROWS_MEL) | 0][i] = 1; p.bass.forEach((r) => r.fill(0)); for (let i = 0; i < STEPS; i += 2) if (Math.random() < 0.5) p.bass[ROWS_MEL - 1 - ((Math.random() * 5) | 0)][i] = 1; s.touch(); paintAll(); } } }, '🎲 Randomize'),
         h('button.btn', { title: 'Copy pattern to next slot', on: { click: () => { const keys = Object.keys(st.patterns); const n = keys[(keys.indexOf(st.current) + 1) % keys.length]; st.patterns[n] = structuredClone(pat()); s.touch(); MS.toast(`Copied ${st.current} → ${n}`); } } }, '⧉ Copy →'),
-        h('button.btn.primary', { on: { click: exportWav } }, '⬇ Export WAV'));
+        h('button.btn', { on: { click: exportMidi } }, '⬇ MIDI'), h('button.btn.primary', { on: { click: exportWav } }, '⬇ Export WAV'));
       function tick() {
         while (nextT < ac.currentTime + 0.12) {
           const seq = st.chain || st.current; const pk = seq[chainIdx % seq.length]; const p = st.patterns[pk] || pat(); const sd = 60 / st.bpm / 4; const t = nextT + (step % 2 ? st.swing * sd * 0.5 : 0);
-          const v = voices(ac, bus.master); p.drums.forEach((row, i) => row[step] && v.drum(i, t)); p.mel.forEach((row, r) => row[step] && synthNote(ac, bus.synthBus, midiFreq(rowMidi(st, r, 5)), t, sd * 1.8, st)); p.bass.forEach((row, r) => row[step] && synthNote(ac, bus.synthBus, midiFreq(rowMidi(st, r, 3)), t, sd * 1.5, st, true));
-          const thisStep = step, thisPk = pk; setTimeout(() => highlight(thisStep, thisPk), Math.max(0, (t - ac.currentTime) * 1000));
+          const v = voices(ac, bus.drums); p.drums.forEach((row, i) => row[step] && v.drum(i, t)); p.mel.forEach((row, r) => row[step] && synthNote(ac, bus.lead, midiFreq(rowMidi(st, r, 5)), t, sd * 1.8, st)); p.bass.forEach((row, r) => row[step] && synthNote(ac, bus.bass, midiFreq(rowMidi(st, r, 3)), t, sd * 1.5, st, true));
+          const thisStep = step, thisPk = pk; curStep = step; setTimeout(() => highlight(thisStep, thisPk), Math.max(0, (t - ac.currentTime) * 1000));
           nextT += sd; step = (step + 1) % STEPS; if (step === 0) chainIdx++;
         }
       }
