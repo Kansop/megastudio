@@ -13,7 +13,7 @@
     async mount(view) {
       const s = await MS.store('gantt', sample); const P = () => s.data.projects.find((p) => p.id === s.data.active) || s.data.projects[0];
       const save = () => s.touch(); let selected = null, showCrit = true;
-      const left = h('div', { style: { width: '330px', flex: 'none', borderRight: '1px solid var(--line)', overflow: 'hidden', display: 'flex', flexDirection: 'column' } });
+      const left = h('div.gantt-left', { style: { width: '330px', flex: 'none', borderRight: '1px solid var(--line)', overflow: 'hidden', display: 'flex', flexDirection: 'column' } });
       const right = h('div', { style: { flex: 1, overflow: 'auto', position: 'relative' } });
       const stats = h('div.row.small.muted', { style: { padding: '8px 14px', borderTop: '1px solid var(--line)', flexWrap: 'wrap', gap: '14px' } });
       view.append(h('div', { style: { display: 'flex', flexDirection: 'column', height: '100%' } }, h('div', { style: { display: 'flex', flex: 1, minHeight: 0 } }, left, right), stats));
