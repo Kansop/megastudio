@@ -160,7 +160,7 @@
     if (current && current.unmount) { try { current.unmount(); } catch (e) { console.error(e); } }
     const app = MS.appMap[id]; currentId = id;
     const view = document.getElementById('view');
-    view.innerHTML = ''; view.className = ''; view.scrollTop = 0; MS.setActions();
+    view.innerHTML = ''; view.className = ''; view.removeAttribute('style'); view.scrollTop = 0; MS.setActions();
     document.getElementById('app-title').textContent = app.icon + '  ' + app.name;
     document.title = app.name + ' — MegaStudio';
     document.querySelectorAll('.nav-item').forEach((n) => n.classList.toggle('active', n.dataset.id === id));

@@ -1,7 +1,33 @@
 /* MegaStudio service worker: precache app shell, stale-while-revalidate for everything same-origin */
-const VERSION = 'megastudio-v1';
-const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'css/app.css', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png',
-  'js/core.js', 'js/md.js', 'js/boot.js', 'js/apps/dashboard.js', 'js/apps/notes.js', 'js/apps/kanban.js', 'js/apps/calendar.js', 'js/apps/sheets.js', 'js/apps/paint.js', 'js/apps/music.js', 'js/apps/code.js', 'js/apps/files.js', 'js/apps/games.js', 'js/apps/settings.js'];
+const VERSION = 'megastudio-3655efe693';
+const SHELL = [
+  './',
+  'css/app.css',
+  'icons/icon-192.png',
+  'icons/icon-512.png',
+  'icons/icon.svg',
+  'index.html',
+  'js/apps/calendar.js',
+  'js/apps/code.js',
+  'js/apps/dashboard.js',
+  'js/apps/files.js',
+  'js/apps/flashcards.js',
+  'js/apps/focus.js',
+  'js/apps/games.js',
+  'js/apps/kanban.js',
+  'js/apps/music.js',
+  'js/apps/notes.js',
+  'js/apps/paint.js',
+  'js/apps/settings.js',
+  'js/apps/sheets.js',
+  'js/apps/slides.js',
+  'js/apps/toolbox.js',
+  'js/apps/whiteboard.js',
+  'js/boot.js',
+  'js/core.js',
+  'js/md.js',
+  'manifest.webmanifest'
+];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VERSION).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', (e) => {
