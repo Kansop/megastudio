@@ -12,12 +12,17 @@
     const q = parseQty(m[1]); let u = m[2] ? UNITS[m[2].toLowerCase()] : ''; let n = m[3];
     if (m[2] && !u) n = m[2] + ' ' + n; return { q, u: u || '', n: n.trim() };
   }
-  function fmtQty(q) { if (q == null) return ''; const w = Math.floor(q + 1e-6), f = q - w; const opts = [[0, ''], [0.125, '⅛'], [0.25, '¼'], [1 / 3, '⅓'], [0.5, '½'], [2 / 3, '⅔'], [0.75, '¾'], [1, '']]; let best = opts[0]; for (const o of opts) if (Math.abs(o[0] - f) < Math.abs(best[0] - f)) best = o; if (Math.abs(best[0] - f) > 0.07 || q >= 20) return String(+q.toFixed(q < 10 ? 1 : 0)); const W = best[0] === 1 ? w + 1 : w; return (W ? W + (best[1] ? ' ' : '') : '') + best[1] || '0'; }
+  function fmtQty(q) {
+    if (q == null) return ''; if (q >= 20) return String(Math.round(q)); if (q >= 10) return String(Math.round(q * 2) / 2).replace('.5', ' ½');
+    const w = Math.floor(q + 1e-6), f = q - w; const opts = [[0, ''], [0.125, '⅛'], [0.25, '¼'], [1 / 3, '⅓'], [0.5, '½'], [2 / 3, '⅔'], [0.75, '¾'], [1, '']];
+    let best = opts[0]; for (const o of opts) if (Math.abs(o[0] - f) < Math.abs(best[0] - f)) best = o;
+    const W = best[0] === 1 ? w + 1 : w; const out = (W ? String(W) : '') + (W && best[1] ? ' ' : '') + best[1]; return out || (q > 0 ? '⅛' : '0');
+  }
   const PL = { cup: 'cups', can: 'cans', clove: 'cloves', slice: 'slices', stick: 'sticks', bunch: 'bunches' };
   const unitFor = (u, q) => (q > 1 && PL[u]) || u;
   const fmtIng = (i, k = 1) => { const q = i.q == null ? null : i.q * k; return [fmtQty(q), unitFor(i.u, q), i.n].filter(Boolean).join(' '); };
   const TSP = { tsp: 1, tbsp: 3, cup: 48 };
-  function fmtVol(t) { if (t >= 12) return [t / 48, 'cup']; if (t >= 3) return [t / 3, 'tbsp']; return [t, 'tsp']; }
+  function fmtVol(t) { if (t >= 12) return [Math.round(t / 12) / 4, 'cup']; if (t >= 3) return [Math.round(t / 1.5) / 2, 'tbsp']; return [Math.round(t * 4) / 4, 'tsp']; }
   const AISLES = [['🧂 Spices', /\bsalt\b|pepper flakes|black pepper|cumin|paprika|oregano|cinnamon|nutmeg|chili powder|turmeric|spice|garam|bay leaf|dill|\bdried\b/i], ['🥫 Pantry', /tomato paste|crushed tomatoes|whole tomatoes|broth|stock|olive|beans|chia|baking/i], ['🧀 Dairy & eggs', /tofu|milk|butter|cheese|cream|yogurt|egg|parmesan|mozzarella|feta|cheddar/i], ['🥬 Produce', /onion|garlic|tomato|lettuce|spinach|pepper(?!corn)|carrot|celery|potato|lemon|lime|apple|banana|berr|avocado|herb|basil|cilantro|parsley|ginger|mushroom|zucchini|cucumber|scallion|kale|broccoli|cabbage|chili|mint|thyme|rosemary|asparagus|jalape|onion|squash|corn\b/i], ['🥩 Meat & fish', /chicken|beef|pork|bacon|sausage|salmon|shrimp|fish|turkey|lamb|tuna|ham/i], ['🧀 Dairy & eggs', /milk|butter|cheese|cream|yogurt|egg|parmesan|mozzarella|feta/i], ['🍞 Bakery', /bread|tortilla|bun|pita|baguette/i], ['🥫 Pantry', /flour|sugar|rice|pasta|spaghetti|oil|vinegar|sauce|stock|broth|beans|lentil|oats|honey|syrup|baking|yeast|chocolate|vanilla|cocoa|noodle|coconut|nut|peanut|tomato paste|can|chickpea|quinoa|soy|mustard|ketchup|mayo|salsa|curry/i], ['🧂 Spices', /salt|pepper|cumin|paprika|oregano|cinnamon|nutmeg|chili powder|turmeric|spice|garam|bay/i]];
   const aisleOf = (n) => (AISLES.find(([, re]) => re.test(n)) || ['🛒 Other'])[0];
   const R = (name, emoji, tags, servings, time, ing, steps, notes = '') => ({ id: uid(), name, emoji, tags, servings, time, ing: ing.split('\n'), steps: steps.split('\n'), notes, fav: false, rating: 0, made: 0 });

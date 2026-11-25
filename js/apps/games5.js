@@ -39,7 +39,9 @@
     let mapName = 'Meadow';
     const bar = h('div.row', { style: { justifyContent: 'center', flexWrap: 'wrap', gap: '6px', marginTop: '8px' } });
     const panel = h('div.row', { style: { justifyContent: 'center', flexWrap: 'wrap', gap: '6px', marginTop: '6px', minHeight: '34px' } });
+    let tdCanvas;
     const stop = canvasGame(host, W, H, ({ cv, g, info }) => {
+      tdCanvas = cv;
       const goldEl = h('strong'), livesEl = h('strong'), waveEl = h('strong'), scoreEl = h('span.muted');
       info.append(h('span', '💰 ', goldEl), h('span', '❤️ ', livesEl), h('span', '🌊 ', waveEl), scoreEl);
       let S; const path = [], pathCells = new Set(); let pathLen = 0;
@@ -138,7 +140,7 @@
         // placement ghost
         if (S.place && S.hover) { const [c, r] = S.hover; const ok = canPlace(c, r); const T = TOWERS[S.place]; g.fillStyle = ok ? 'rgba(61,220,151,.18)' : 'rgba(255,93,108,.25)'; g.strokeStyle = ok ? '#3ddc97' : '#ff5d6c'; g.lineWidth = 1.5; g.beginPath(); g.arc(c * CS + CS / 2, r * CS + CS / 2, T.lv[0].range * CS, 0, 7); g.fill(); g.stroke(); g.globalAlpha = 0.7; g.font = '20px system-ui'; g.fillText(T.icon, c * CS + CS / 2, r * CS + CS / 2); g.globalAlpha = 1; }
         g.textAlign = 'left'; g.textBaseline = 'alphabetic';
-        if (!S.running && S.wave === 0 && !S.towers.length) banner(g, W, H, '🏰 Tower Defense', 'Pick a tower below, tap the grass to build, then Start wave');
+        if (!S.running && S.wave === 0 && !S.towers.length) banner(g, W, H, '🏰 Tower Defense', 'Pick a tower above, tap the grass to build, then Start wave');
         if (S.over) banner(g, W, H, 'Defeated on wave ' + S.wave, `Score ${S.score} · press R or ↺ to try again`);
         if (S.paused && !S.over) banner(g, W, H, 'Paused', 'Press P or Space to resume');
       }
@@ -182,7 +184,8 @@
         else { const i = '12345'.indexOf(k); if (i >= 0) { S.place = Object.keys(TOWERS)[i]; S.sel = null; renderBar(); renderPanel(); } }
       } };
     });
-    host.append(bar, panel);
+    // keep the tower bar and selection panel above the board so they're visible without scrolling
+    host.insertBefore(bar, tdCanvas); host.insertBefore(panel, tdCanvas); tdCanvas.style.maxHeight = 'calc(100vh - 300px)'; panel.style.marginBottom = '8px';
     return stop;
   } };
   // register palette commands for every game (later game packs load after the Arcade app registers)

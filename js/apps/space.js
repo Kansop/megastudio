@@ -52,7 +52,7 @@
       view.style.position = 'relative'; view.style.overflow = 'hidden'; view.style.background = '#03040a';
       view.append(cv, listEl, card, hud);
       const RATES = [['⏸', 0], ['1×', 1 / 86400], ['1 h/s', 1 / 24], ['1 day/s', 1], ['1 wk/s', 7], ['1 mo/s', 30], ['1 yr/s', 365.25], ['10 yr/s', 3652.5]];
-      let rateI = 3, dir = 1, t = Date.now();
+      let rateI = 4, dir = 1, t = Date.now();
       const rateSel = h('select.input', { on: { change: () => { rateI = +rateSel.value; } } }, RATES.map(([l], i) => h('option', { value: i, selected: i === rateI }, l)));
       const dateIn = h('input.input', { type: 'date', style: { width: '140px' }, on: { change: () => { if (dateIn.value) t = new Date(dateIn.value + 'T12:00:00').getTime(); } } });
       const tog = (k, label) => { const b = h('button.btn.sm', { class: st.data[k] ? 'on' : '', on: { click: () => { st.data[k] = !st.data[k]; b.classList.toggle('on', st.data[k]); st.touch(); buildOrbits(); } } }, label); return b; };

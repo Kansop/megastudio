@@ -54,6 +54,9 @@
     if (!MS.booted) return; clearInterval(wait);
     if (navigator.webdriver) return;
     const m = await MS.store('meta', { recent: [], opened: {} });
-    if (!m.data.toured) setTimeout(start, 600);
+    if (m.data.toured) return;
+    // existing users (who've already opened apps) get a gentle nudge instead of an interrupting tour
+    if ((m.data.recent || []).length > 1) { m.data.toured = true; m.touch(); setTimeout(() => MS.toast('✨ New here or missed what\'s new? Press Ctrl+K and run "Take the tour"'), 1500); return; }
+    setTimeout(start, 600);
   }, 100);
 })();
