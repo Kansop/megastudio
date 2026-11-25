@@ -19,8 +19,10 @@
   MS.apps.filter((a) => !a.hidden).forEach((a) => (groups[a.group] = groups[a.group] || []).push(a));
   const order = ['Home', 'Productivity', 'Create', 'Develop', 'Play', 'Tools', 'System', 'Apps'];
   Object.keys(groups).sort((a, b) => order.indexOf(a) - order.indexOf(b)).forEach((g) => {
-    nav.append(h('div.nav-group', g));
-    groups[g].forEach((a) => nav.append(h('button.nav-item', { 'data-id': a.id, title: a.name, on: { click: () => MS.go(a.id) } }, h('span.ico', a.icon), h('span.lbl', a.name))));
+    const closed = (settings.data.navClosed || []).includes(g);
+    const items = groups[g].map((a) => h('button.nav-item', { class: closed ? 'gone' : '', 'data-id': a.id, title: a.name, on: { click: () => MS.go(a.id) } }, h('span.ico', a.icon), h('span.lbl', a.name)));
+    const head = h('div.nav-group', { class: closed ? 'closed' : '', title: 'Click to collapse/expand', on: { click: () => { const nc = new Set(settings.data.navClosed || []); const now = !nc.has(g); now ? nc.add(g) : nc.delete(g); settings.data.navClosed = [...nc]; settings.touch(); head.classList.toggle('closed', now); items.forEach((i) => i.classList.toggle('gone', now && !i.classList.contains('active'))); } } }, g + ' · ' + groups[g].length);
+    nav.append(head, ...items);
   });
 
   const toggleCollapse = () => { settings.data.collapsed = !settings.data.collapsed; settings.touch(); applySettings(); };
