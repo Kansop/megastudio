@@ -1,5 +1,5 @@
 /* MegaStudio service worker: precache app shell, stale-while-revalidate for everything same-origin */
-const VERSION = 'megastudio-cf3528d9fe';
+const VERSION = 'megastudio-368ff96be5';
 const SHELL = [
   './',
   'css/app.css',
@@ -22,6 +22,7 @@ const SHELL = [
   'js/apps/gantt.js',
   'js/apps/inbox.js',
   'js/apps/kanban.js',
+  'js/apps/maps.js',
   'js/apps/music.js',
   'js/apps/notes.js',
   'js/apps/paint.js',
