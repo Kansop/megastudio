@@ -46,7 +46,7 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | 🧰 | Toolbox | 15 utilities: calculator, QR codes, units, JSON, regex, colors, encoders, hashes, passwords, diff… |
 | 🗂 | Files | IndexedDB file system with folders, previews, editing |
 | 🧪 | Physics Lab | Verlet sandbox: balls, boxes, ropes, cloth, ragdolls, wheels, blasts |
-| 🕹 | Arcade | 27 games: Snake, 2048, Blocks, Minesweeper, Breakout, Memory, Flappy, Pong, Sudoku, Connect Four, Word Guess, Tic-Tac-Toe, Chess, Asteroids, Space Invaders, Solitaire, Reversi, Checkers, Simon, Turbo Racer, Pixel Quest, Tower Defense, Gem Swap, Mini Golf, Battleship… |
+| 🕹 | Arcade | 29 games: Snake, 2048, Blocks, Minesweeper, Breakout, Memory, Flappy, Pong, Sudoku, Connect Four, Word Guess, Tic-Tac-Toe, Chess, Asteroids, Space Invaders, Solitaire, Reversi, Checkers, Simon, Turbo Racer, Pixel Quest, Tower Defense, Gem Swap, Mini Golf, Battleship, Maze Muncher, Bubble Shooter… |
 | ⚙️ | Settings | 7 themes, accent color, text size, full backup/restore |
 
 ## Power features
