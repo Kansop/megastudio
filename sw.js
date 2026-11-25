@@ -1,5 +1,5 @@
 /* MegaStudio service worker: precache app shell, stale-while-revalidate for everything same-origin */
-const VERSION = 'megastudio-ee6e174905';
+const VERSION = 'megastudio-b0d88f0c6a';
 const SHELL = [
   './',
   'css/app.css',
@@ -49,6 +49,7 @@ const SHELL = [
   'js/gif.js',
   'js/md.js',
   'js/qr.js',
+  'js/tour.js',
   'manifest.webmanifest'
 ];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
