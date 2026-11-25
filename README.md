@@ -17,6 +17,7 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | ⏱ | Focus & Habits | Pomodoro timer, focus stats, habit streaks + 16-week heatmap |
 | 🗃 | Flashcards | Spaced repetition (SM-2), quiz mode, CSV import/export |
 | ⌨️ | Typing Tutor | Speed tests (words/quotes/code), 14 finger-guided lessons, history chart, error heatmap + drills, Word Rain game |
+| 🍳 | Recipes | Recipe box with servings scaling, full-screen cook mode with step timers, weekly meal planner with auto-fill, aisle-grouped shopping list that merges units, text import |
 | 💰 | Money | Income/expense tracker, category donut, 6-month trend, budgets, CSV |
 | 🗃 | Database | Typed fields, grid/gallery/board/chart views, formulas, filters, CSV, templates |
 | 💬 | Bot Chat | 7 offline bots (studio assistant, ELIZA, trivia, text adventure, roast bot, story weaver, coach) + group chats |
