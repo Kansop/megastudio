@@ -164,8 +164,9 @@
             g.font = 'bold 48px system-ui'; g.globalAlpha = 0.3; g.fillText(s1, 250, 60); g.fillText(s2, 360, 60); g.globalAlpha = 1; if (state !== 'play') banner(g, 640, 400, state === 'win' ? 'You win! 🏆' : 'CPU wins', 'Click or Space for a rematch'); } };
       }); } },
   };
+  MS.arcade = { GAMES, report, getScores, canvasGame, banner, swipe };
   MS.register({
-    id: 'arcade', name: 'Arcade', icon: '🕹', group: 'Play', desc: '8 games with high scores', keywords: 'games snake tetris 2048 minesweeper breakout memory flappy pong play',
+    id: 'arcade', name: 'Arcade', icon: '🕹', group: 'Play', desc: '12 games with high scores', keywords: 'games snake tetris 2048 minesweeper breakout memory flappy pong play',
     commands: Object.entries(GAMES).map(([k, gm]) => ({ id: 'game-' + k, title: 'Play ' + gm.name, icon: gm.icon, run: () => MS.go('arcade', k) })),
     async mount(view) {
       let cleanup = null; const host = h('div.pad', { style: { textAlign: 'center' } }); view.append(host);

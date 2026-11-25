@@ -16,7 +16,15 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | 🎨 | Paint | Layers, brushes, shapes, flood fill, text, eyedropper, symmetry, zoom, PNG export |
 | 🎹 | Music Studio | Drum machine + lead + bass sequencer, live keyboard synth, 4 patterns + song chain, WAV export |
 | 💻 | Code Lab | HTML/CSS/JS playground with syntax highlighting, live preview, console, templates |
-| 🕹 | Arcade | Snake, 2048, Blocks, Minesweeper, Breakout, Memory, Flappy, Pong — with best scores |
+| 🕹 | Arcade | 12 games: Snake, 2048, Blocks, Minesweeper, Breakout, Memory, Flappy, Pong, Sudoku, Connect Four (AI), Word Guess, Tic-Tac-Toe |
+| 🧠 | Whiteboard | Infinite canvas mind maps & flows: sticky notes, shapes, connectors, pen, auto-arrange, SVG/PNG export |
+| ⏱ | Focus & Habits | Pomodoro timer with chime & notifications, focus stats, habit streaks + 16-week heatmap |
+| 🗃 | Flashcards | Spaced repetition (SM-2), multiple-choice quiz mode, CSV import/export |
+| 🎤 | Slides | Markdown decks, 6 themes, live thumbnails, full-screen presenting, speaker notes, HTML/PDF export |
+| 👾 | Pixel Studio | Pixel art + frame animation, onion skin, palettes, mirror, spritesheet & animated GIF export |
+| 💰 | Money | Income/expense tracker, category donut, 6-month trend, budgets, CSV |
+| 🎙 | Recorder | Voice memos with live waveform and playback speed, saved to Files |
+| 🧰 | Toolbox | 15 utilities: calculator, QR codes, units, JSON, regex, colors, encoders, hashes, passwords, text, diff, lorem, UUID, time |
 | 🗂 | Files | IndexedDB file system: folders, drag-drop upload, previews, in-place text editing |
 | ⚙️ | Settings | 7 themes, accent color, text size, full backup/restore |
 

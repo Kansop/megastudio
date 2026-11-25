@@ -1,4 +1,4 @@
-/* Toolbox: 14 utilities — calculator, units, JSON, regex, colors, encoders, hashes, passwords, text, diff, lorem, UUID, time */
+/* Toolbox: 15 utilities — calculator, units, JSON, regex, colors, encoders, hashes, passwords, text, diff, lorem, UUID, time */
 (function () {
   const { h } = MS;
   const area = (ph, val = '', rows = 8) => h('textarea.input.mono', { placeholder: ph, value: val, rows, style: { width: '100%', resize: 'vertical' } });
@@ -14,6 +14,14 @@
       const pad = h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: '6px' } }, keys.map((k) => h('button.btn', { class: k === '=' ? 'primary' : '', style: { padding: '12px 4px', fontSize: '16px' }, on: { click: () => { if (k === 'C') disp.value = ''; else if (k === '⌫') disp.value = disp.value.slice(0, -1); else if (k === '=') return eq(); else disp.value += k; ev(); disp.focus(); } } }, k)));
       el.append(h('div', { style: { display: 'grid', gridTemplateColumns: 'minmax(300px,420px) 1fr', gap: '16px' } }, h('div.col', disp, res, pad), h('div.card', h('strong', 'History'), histEl)));
       setTimeout(() => disp.focus(), 20);
+    } },
+    qr: { name: 'QR code maker', icon: '▦', run(el) {
+      const inp = area('Text or URL', 'https://kansop.github.io/megastudio/', 3); const fg = h('input', { type: 'color', value: '#1b1e33' }); const bg = h('input', { type: 'color', value: '#ffffff' }); const host = h('div', { style: { minHeight: '200px' } }); const info = h('div.small.muted');
+      const kinds = { Text: null, 'Wi-Fi': 'WIFI:T:WPA;S:NetworkName;P:password;;', Email: 'mailto:someone@example.com?subject=Hello', Phone: 'tel:+15555550123', SMS: 'SMSTO:+15555550123:Hi there!', Contact: 'BEGIN:VCARD\nVERSION:3.0\nFN:Your Name\nTEL:+15555550123\nEMAIL:you@example.com\nEND:VCARD' };
+      let cv;
+      const run = () => { host.innerHTML = ''; try { cv = MS.qrCanvas(inp.value || ' ', 8, fg.value, bg.value); cv.style.maxWidth = '100%'; cv.style.borderRadius = '12px'; host.append(cv); info.textContent = `Version ${cv.qrVersion} · ${new TextEncoder().encode(inp.value).length} bytes · error correction M (~15%)`; } catch (e) { host.append(h('div', { style: { color: 'var(--bad)' } }, e.message)); info.textContent = ''; } };
+      [inp, fg, bg].forEach((x) => x.addEventListener('input', MS.debounce(run, 120)));
+      el.append(h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '16px' } }, h('div.col', h('div.row', { style: { flexWrap: 'wrap' } }, Object.entries(kinds).map(([k, v]) => h('button.btn.sm', { on: { click: () => { if (v) inp.value = v.replace(/\\n/g, '\n'); run(); } } }, k))), inp, h('div.row', 'Color', fg, 'Background', bg), info, h('div.row', h('button.btn.primary', { on: { click: () => cv && cv.toBlob((b) => MS.download('qr-code.png', b)) } }, '⬇ PNG'), h('button.btn', { on: { click: async () => { if (!cv) return; const url = cv.toDataURL(); await MS.db.files.put({ id: MS.uid('f'), name: 'QR code.png', type: 'image/png', folder: '/Pictures', size: url.length * 0.75 | 0, data: url, created: Date.now(), updated: Date.now() }); MS.toast('Saved to Files', 'good'); } } }, '💾 Files'))), host)); run();
     } },
     units: { name: 'Unit converter', icon: '📏', run(el) {
       const U = { Length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.344, yd: 0.9144, ft: 0.3048, in: 0.0254, nmi: 1852 }, Mass: { kg: 1, g: 0.001, mg: 1e-6, lb: 0.45359237, oz: 0.028349523, t: 1000, st: 6.35029 }, Volume: { L: 1, mL: 0.001, 'gal (US)': 3.78541, 'qt (US)': 0.946353, 'cup (US)': 0.2365882, 'fl oz': 0.0295735, 'm³': 1000, tbsp: 0.0147868, tsp: 0.00492892 }, Area: { 'm²': 1, 'km²': 1e6, 'ft²': 0.092903, acre: 4046.86, hectare: 10000, 'mi²': 2589988 }, Speed: { 'm/s': 1, 'km/h': 1 / 3.6, mph: 0.44704, knot: 0.514444, 'ft/s': 0.3048 }, Data: { B: 1, KB: 1e3, MB: 1e6, GB: 1e9, TB: 1e12, KiB: 1024, MiB: 1048576, GiB: 1073741824, bit: 0.125 }, Time: { s: 1, ms: 0.001, min: 60, h: 3600, day: 86400, week: 604800, year: 31557600 }, Temperature: { '°C': 'c', '°F': 'f', K: 'k' } };
@@ -123,7 +131,7 @@
     } },
   };
   MS.register({
-    id: 'toolbox', name: 'Toolbox', icon: '🧰', group: 'Tools', desc: '14 handy utilities', keywords: 'tools calculator converter json regex color base64 hash password uuid diff lorem text time',
+    id: 'toolbox', name: 'Toolbox', icon: '🧰', group: 'Tools', desc: '15 handy utilities', keywords: 'tools calculator converter json regex color base64 hash password uuid diff lorem text time',
     commands: Object.entries(TOOLS).map(([k, t]) => ({ id: 'tool-' + k, title: t.name, icon: t.icon, run: () => MS.go('toolbox', k) })),
     async mount(view) {
       const nav = h('div.list'); const body = h('div', { style: { flex: 1, overflow: 'auto', padding: '18px' } });

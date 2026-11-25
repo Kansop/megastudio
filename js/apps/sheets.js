@@ -170,7 +170,7 @@
       function startEdit(initial) {
         const td = cellEls[ref(sel.c, sel.r)]; const k = ref(sel.c, sel.r);
         const inp = h('input.mono', { value: initial ?? sheet().cells[k]?.v ?? '', style: { position: 'absolute', left: td.offsetLeft + 'px', top: td.offsetTop + 'px', width: Math.max(td.offsetWidth, 140) + 'px', height: td.offsetHeight + 'px', zIndex: 5, border: '2px solid var(--accent)', background: 'var(--bg)', padding: '0 5px', outline: 'none', fontSize: '13px' } });
-        grid.append(inp); inp.focus(); editing = inp;
+        grid.append(inp); inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); editing = inp;
         const done = (save, dc = 0, dr = 0) => { if (editing !== inp) return; editing = null; if (save) commit(inp.value, k); inp.remove(); if (dc || dr) move(dc, dr); grid.focus(); };
         inp.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); done(true, 0, e.shiftKey ? -1 : 1); } else if (e.key === 'Tab') { e.preventDefault(); done(true, e.shiftKey ? -1 : 1, 0); } else if (e.key === 'Escape') done(false); });
         inp.addEventListener('blur', () => done(true));

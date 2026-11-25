@@ -1,5 +1,5 @@
 /* MegaStudio service worker: precache app shell, stale-while-revalidate for everything same-origin */
-const VERSION = 'megastudio-3655efe693';
+const VERSION = 'megastudio-268bad9365';
 const SHELL = [
   './',
   'css/app.css',
@@ -7,6 +7,7 @@ const SHELL = [
   'icons/icon-512.png',
   'icons/icon.svg',
   'index.html',
+  'js/apps/budget.js',
   'js/apps/calendar.js',
   'js/apps/code.js',
   'js/apps/dashboard.js',
@@ -14,10 +15,13 @@ const SHELL = [
   'js/apps/flashcards.js',
   'js/apps/focus.js',
   'js/apps/games.js',
+  'js/apps/games2.js',
   'js/apps/kanban.js',
   'js/apps/music.js',
   'js/apps/notes.js',
   'js/apps/paint.js',
+  'js/apps/pixel.js',
+  'js/apps/recorder.js',
   'js/apps/settings.js',
   'js/apps/sheets.js',
   'js/apps/slides.js',
@@ -25,7 +29,9 @@ const SHELL = [
   'js/apps/whiteboard.js',
   'js/boot.js',
   'js/core.js',
+  'js/gif.js',
   'js/md.js',
+  'js/qr.js',
   'manifest.webmanifest'
 ];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
