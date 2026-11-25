@@ -33,9 +33,11 @@ const calc = await page.evaluate(() => document.querySelector('#palette-list li'
 results.push({ label: 'palette calc', ok: calc.includes('= 4'), errs: calc.includes('= 4') ? [] : ['got ' + calc] });
 // mobile layout
 await page.keyboard.press('Escape'); await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
-await visit('#/dashboard', 'mobile:dashboard');
-const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 2);
-results.push({ label: 'mobile no h-overflow', ok: !overflow, errs: overflow ? ['horizontal overflow'] : [] });
+for (const a of apps) {
+  await visit('#/' + a, 'mobile:' + a);
+  const ov = await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.querySelector('#view').scrollWidth) - innerWidth);
+  if (ov > 2) results.push({ label: 'mobile overflow:' + a, ok: false, errs: ['view ' + ov + 'px wider than screen'] });
+}
 await browser.close(); srv.close();
 const bad = results.filter((r) => !r.ok);
 results.forEach((r) => console.log((r.ok ? 'PASS ' : 'FAIL ') + r.label + (r.ok ? '' : '  ' + r.errs.join(' | '))));

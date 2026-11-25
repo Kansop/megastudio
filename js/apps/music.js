@@ -93,9 +93,9 @@
       const noteLabel = (r, oct) => { const m = rowMidi(st, r, oct); return NOTE_NAMES[m % 12] + (Math.floor(m / 12) - 1); };
       const gridsWrap = h('div.col', { style: { gap: '16px' } });
       const buildGrids = () => { gridsWrap.innerHTML = ''; gridsWrap.append(
-        h('div.card', h('div.row', { style: { marginBottom: '8px' } }, h('strong', '🥁 Drums'), h('span.small.muted', 'click labels to preview · drag to paint')), mkGrid('drums', DRUMS.length, (r) => DRUMS[r], '#ff4fa3')),
-        h('div.card', h('div.row', { style: { marginBottom: '8px' } }, h('strong', '🎹 Lead synth'), h('span.small.muted', st.scale + ' in ' + NOTE_NAMES[st.root])), mkGrid('mel', ROWS_MEL, (r) => noteLabel(r, 5), '#7c5cff')),
-        h('div.card', h('div.row', { style: { marginBottom: '8px' } }, h('strong', '🎸 Bass')), mkGrid('bass', ROWS_MEL, (r) => noteLabel(r, 3), '#3ddc97'))); paintAll(); };
+        h('div.card', { style: { overflowX: 'auto' } }, h('div.row', { style: { marginBottom: '8px' } }, h('strong', '🥁 Drums'), h('span.small.muted', 'click labels to preview · drag to paint')), mkGrid('drums', DRUMS.length, (r) => DRUMS[r], '#ff4fa3')),
+        h('div.card', { style: { overflowX: 'auto' } }, h('div.row', { style: { marginBottom: '8px' } }, h('strong', '🎹 Lead synth'), h('span.small.muted', st.scale + ' in ' + NOTE_NAMES[st.root])), mkGrid('mel', ROWS_MEL, (r) => noteLabel(r, 5), '#7c5cff')),
+        h('div.card', { style: { overflowX: 'auto' } }, h('div.row', { style: { marginBottom: '8px' } }, h('strong', '🎸 Bass')), mkGrid('bass', ROWS_MEL, (r) => noteLabel(r, 3), '#3ddc97'))); paintAll(); };
       const ctl = (label, el) => h('label.col', { style: { gap: '2px', fontSize: '12px' } }, h('span.muted', label), el);
       const bpm = h('input.input', { type: 'number', min: 40, max: 240, value: st.bpm, style: { width: '74px' }, on: { change: () => { st.bpm = MS.clamp(+bpm.value || 110, 40, 240); s.touch(); rebuildBus(); } } });
       const swing = h('input', { type: 'range', min: 0, max: 0.6, step: 0.05, value: st.swing, on: { input: () => { st.swing = +swing.value; s.touch(); } } });
