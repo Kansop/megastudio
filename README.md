@@ -19,6 +19,7 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | ⌨️ | Typing Tutor | Speed tests (words/quotes/code), 14 finger-guided lessons, history chart, error heatmap + drills, Word Rain game |
 | 🍳 | Recipes | Recipe box with servings scaling, full-screen cook mode with step timers, weekly meal planner with auto-fill, aisle-grouped shopping list that merges units, text import |
 | 📔 | Journal | Daily mood, activities, sleep & gratitude, writing prompts, on-this-day, Year in Pixels, mood trend chart, activity→mood insights, Markdown export |
+| 🎯 | Finance Planner | Savings goals with deposits, deadlines & projections, debt payoff (snowball vs avalanche), compound growth with inflation, loan/mortgage amortization |
 | 💰 | Money | Income/expense tracker, category donut, 6-month trend, budgets, CSV |
 | 🗃 | Database | Typed fields, grid/gallery/board/chart views, formulas, filters, CSV, templates |
 | 💬 | Bot Chat | 7 offline bots (studio assistant, ELIZA, trivia, text adventure, roast bot, story weaver, coach) + group chats |
