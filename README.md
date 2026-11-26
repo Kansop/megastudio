@@ -53,7 +53,7 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | ⏳ | Sand Lab | Falling-sand simulator: 17 elements (sand, water, oil, fire, lava, acid, plants, ice, snow, gunpowder, cloner…) with reactions, 5 scenes, PNG export |
 | 🧪 | Physics Lab | Verlet sandbox: balls, boxes, ropes, cloth, ragdolls, wheels, blasts |
 | ♞ | Chess Trainer | 420 verified mate-in-1/2/3 puzzles with Elo rating & streaks, Puzzle Rush, 30-line opening explorer with quiz mode, endgame drills vs engine, analysis board with FEN |
-| 🕹 | Arcade | 32 games: Snake, 2048, Blocks, Minesweeper, Breakout, Memory, Flappy, Pong, Sudoku, Connect Four, Word Guess, Tic-Tac-Toe, Chess, Asteroids, Space Invaders, Solitaire, Reversi, Checkers, Simon, Turbo Racer, Pixel Quest, Tower Defense, Gem Swap, Mini Golf, Battleship, Maze Muncher, Bubble Shooter, Stack Tower, Sky Hopper, Picross… |
+| 🕹 | Arcade | 35 games: Snake, 2048, Blocks, Minesweeper, Breakout, Memory, Flappy, Pong, Sudoku, Connect Four, Word Guess, Tic-Tac-Toe, Chess, Asteroids, Space Invaders, Solitaire, Reversi, Checkers, Simon, Turbo Racer, Pixel Quest, Tower Defense, Gem Swap, Mini Golf, Battleship, Maze Muncher, Bubble Shooter, Stack Tower, Sky Hopper, Picross, Fruit Slice, Air Hockey, Hop Road… |
 | ⚙️ | Settings | 7 themes, accent color, text size, full backup/restore |
 
 ## Power features
