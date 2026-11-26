@@ -22,7 +22,7 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | 🎯 | Finance Planner | Savings goals with deposits, deadlines & projections, debt payoff (snowball vs avalanche), compound growth with inflation, loan/mortgage amortization |
 | 💰 | Money | Income/expense tracker, category donut, 6-month trend, budgets, CSV |
 | 🗃 | Database | Typed fields, grid/gallery/board/chart views, formulas, filters, CSV, templates |
-| 💬 | Bot Chat | 7 offline bots (studio assistant, ELIZA, trivia, text adventure, roast bot, story weaver, coach) + group chats |
+| 💬 | Bot Chat | **Real on-device AI** (WebLLM + WebGPU: SmolLM2, Qwen2.5 0.5B/1.5B, Llama 3.2 1B/3B — download once, streamed replies, works offline) plus 7 offline bots (studio assistant, ELIZA, trivia, text adventure, roast bot, story weaver, coach) + group chats |
 | 📈 | Projects | Gantt timeline, dependencies with auto-shift, milestones, critical path, CSV/calendar export |
 | 📬 | Inbox | Local email client: folders, labels, threads, snooze, drafts, attachments, bot replies |
 | 🎨 | Paint | Layers, brushes, shapes, flood fill, text, eyedropper, symmetry, PNG export |
@@ -47,6 +47,7 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | 🧰 | Toolbox | 15 utilities: calculator, QR codes, units, JSON, regex, colors, encoders, hashes, passwords, diff… |
 | 🗂 | Files | IndexedDB file system with folders, previews, editing |
 | 🧪 | Physics Lab | Verlet sandbox: balls, boxes, ropes, cloth, ragdolls, wheels, blasts |
+| ♞ | Chess Trainer | 420 verified mate-in-1/2/3 puzzles with Elo rating & streaks, Puzzle Rush, 30-line opening explorer with quiz mode, endgame drills vs engine, analysis board with FEN |
 | 🕹 | Arcade | 29 games: Snake, 2048, Blocks, Minesweeper, Breakout, Memory, Flappy, Pong, Sudoku, Connect Four, Word Guess, Tic-Tac-Toe, Chess, Asteroids, Space Invaders, Solitaire, Reversi, Checkers, Simon, Turbo Racer, Pixel Quest, Tower Defense, Gem Swap, Mini Golf, Battleship, Maze Muncher, Bubble Shooter… |
 | ⚙️ | Settings | 7 themes, accent color, text size, full backup/restore |
 
