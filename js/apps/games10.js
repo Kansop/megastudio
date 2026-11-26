@@ -1,4 +1,4 @@
-/* Arcade 10: Pinball (full table: flippers, plunger, bumpers, slingshots, drop targets, rollover lanes, multiplier, ball save) */
+/* Arcade 10: Sokoban (verified levels), Pinball (full table: flippers, plunger, bumpers, slingshots, drop targets, rollover lanes, multiplier, ball save) */
 (function () {
   const { h } = MS; const { GAMES, report, canvasGame, banner } = MS.arcade;
 
@@ -95,6 +95,49 @@
         },
       };
     });
+  } };
+
+  /* ================= SOKOBAN ================= */
+  const SOKO = [["########", "#    ###", "#.$ $ ##", "#+#    #", "### ## #", "#    # #", "########"], ["########", "# ### @#", "#    $ #", "##$   .#", "#  # # #", "#   . ##", "########"], ["########", "##  ## #", "#  #.  #", "#  # $ #", "#.   $@#", "##  ####", "########"], ["########", "##.   ##", "#   $  #", "# $   ##", "##@#  ##", "#####.##", "########"], ["##########", "#   ## ###", "#.      ##", "# $ # # ##", "#    #   #", "# .  # # #", "# $ # ## #", "##@$  .# #", "##########"], ["#########", "## # # ##", "#.     ##", "#* #   ##", "## $    #", "# $.    #", "##@# #  #", "#########"], ["#########", "# #. $ ##", "# ##  .##", "#  ##   #", "# .#  # #", "##$ #$ ##", "#  @   ##", "#########"], ["##########", "###   #. #", "#   ##@$##", "### # $  #", "#.$    ###", "# # #    #", "#      ###", "#   #  . #", "##########"], ["#########", "##  ##  #", "##.$.. ##", "#       #", "#     $ #", "##  $   #", "##  @## #", "#########"], ["#########", "##      #", "# $ #   #", "#@$..#$##", "# ###   #", "# ##.   #", "# ##   ##", "#########"], ["##########", "# .##+$  #", "## $ #   #", "#       ##", "#  # $ # #", "#  ## ## #", "#      # #", "# # #.   #", "##########"], ["##########", "#     ## #", "# . # .$ #", "##$##    #", "#  #    .#", "#        #", "# ###$* ##", "#@    ####", "##########"], ["##########", "##.  ##  #", "##$   . ##", "#   ##.$ #", "# #  #   #", "#+$ #  $ #", "#   ##   #", "# #   #  #", "##########"], ["##########", "##   .   #", "#* ##  # #", "#  .  ## #", "###   $ ##", "# ##   $ #", "#      #@#", "# ## ### #", "##########"], ["##########", "# ##  ##*#", "#.    ## #", "#   $  . #", "##  #   ##", "#   #    #", "##$*  #  #", "##@#     #", "##########"], ["##########", "###   # ##", "#@$. $  ##", "#$    #  #", "# ## .#  #", "#  # # # #", "# $  #   #", "#..# #   #", "##########"]];
+  GAMES.sokoban = { name: 'Sokoban', icon: '📦', desc: SOKO.length + ' computer-verified crate-pushing puzzles. Push every crate onto a goal. Arrows/WASD to move, Z to undo, R to restart.', run(host) {
+    const W = 640, H = 560; let st = null; MS.store('sokoban', { solved: {}, best: {}, level: 0 }).then((s) => { st = s; load(Math.min(s.data.level || 0, SOKO.length - 1)); });
+    let cleanupG = null; const wrap = h('div.col', { style: { alignItems: 'center', gap: '8px' } }); host.append(wrap);
+    const bar = h('div.row', { style: { flexWrap: 'wrap', justifyContent: 'center' } }); const holder = h('div'); const pad = h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(3,52px)', gap: '6px', marginTop: '6px' } });
+    wrap.append(bar, holder, pad);
+    let map, boxes, goals, pl, hist, moves, pushes, won, wonT, lvl, face = 1;
+    const L = (i) => SOKO[i];
+    function load(i) { lvl = i; const m = L(i); map = []; boxes = []; goals = []; m.forEach((row, y) => { map.push([...row].map((c) => (c === '#' ? 1 : 0))); [...row].forEach((c, x) => { if ('.*+'.includes(c)) goals.push([x, y]); if ('$*'.includes(c)) boxes.push([x, y]); if ('@+'.includes(c)) pl = [x, y]; }); });
+      // mark outside floor (unreachable) as void for nicer drawing
+      const reach = new Set([pl + '']); const q = [pl]; while (q.length) { const [x, y] = q.pop(); [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dx, dy]) => { const k = [x + dx, y + dy] + ''; if (map[y + dy]?.[x + dx] === 0 && !reach.has(k)) { reach.add(k); q.push([x + dx, y + dy]); } }); }
+      map.forEach((r, y) => r.forEach((c, x) => { if (c === 0 && !reach.has([x, y] + '')) map[y][x] = 2; }));
+      hist = []; moves = 0; pushes = 0; won = false; wonT = 0; if (st) { st.data.level = i; st.touch(); } renderBar(); }
+    const isGoal = (x, y) => goals.some((g) => g[0] === x && g[1] === y); const boxAt = (x, y) => boxes.findIndex((b) => b[0] === x && b[1] === y);
+    function move(dx, dy) { if (won) return; face = dx > 0 ? 1 : dx < 0 ? -1 : face; const nx = pl[0] + dx, ny = pl[1] + dy; if (map[ny]?.[nx] !== 0) return; const bi = boxAt(nx, ny);
+      if (bi >= 0) { const bx = nx + dx, by = ny + dy; if (map[by]?.[bx] !== 0 || boxAt(bx, by) >= 0) return; hist.push([pl.slice(), boxes.map((b) => b.slice()), moves, pushes]); boxes[bi] = [bx, by]; pushes++; } else hist.push([pl.slice(), boxes.map((b) => b.slice()), moves, pushes]);
+      pl = [nx, ny]; moves++; if (boxes.every((b) => isGoal(...b))) win(); renderBar(); }
+    function undo() { const s = hist.pop(); if (!s) return; [pl, boxes, moves, pushes] = s; won = false; renderBar(); }
+    function win() { won = true; wonT = 0; const d = st.data; const prev = d.best[lvl]; if (!prev || moves < prev) d.best[lvl] = moves; d.solved[lvl] = 1; st.touch(); report('Sokoban', Object.keys(d.solved).length); MS.toast(`Level ${lvl + 1} solved in ${moves} moves!`, 'good'); }
+    function renderBar() { bar.innerHTML = ''; const d = st?.data || { solved: {}, best: {} }; const sel = h('select.input', { on: { change: (e) => load(+e.target.value) } }, SOKO.map((_, i) => h('option', { value: i, selected: i === lvl }, `${d.solved[i] ? '✅' : '⬜'} Level ${i + 1}`)));
+      bar.append(h('button.btn.sm', { on: { click: () => lvl > 0 && load(lvl - 1) } }, '◀'), sel, h('button.btn.sm', { on: { click: () => lvl < SOKO.length - 1 && load(lvl + 1) } }, '▶'), h('strong', `Moves ${moves}`), h('span', `Pushes ${pushes}`), h('span.small.muted', d.best[lvl] ? `Best ${d.best[lvl]}` : ''), h('span.small.muted', `${Object.keys(d.solved).length}/${SOKO.length} solved`), h('button.btn.sm', { on: { click: undo } }, '↶ Undo'), h('button.btn.sm', { on: { click: () => load(lvl) } }, '↺ Restart')); }
+    pad.append(...[['', 0, 0], ['▲', 0, -1], ['', 0, 0], ['◀', -1, 0], ['↶', 'u'], ['▶', 1, 0], ['', 0, 0], ['▼', 0, 1], ['', 0, 0]].map(([t, dx, dy]) => t ? h('button.btn', { style: { height: '52px', fontSize: '20px' }, on: { click: () => (dx === 'u' ? undo() : move(dx, dy)) } }, t) : h('div')));
+    cleanupG = canvasGame(holder, W, H, ({ g, cv }) => {
+      MS.arcade.swipe?.(cv, (k) => { const m = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[k]; if (m) move(...m); });
+      return {
+        key(k) { const m = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0], w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0] }[k]; if (m) move(...m); else if (k === 'z' || k === 'Backspace' || k === 'u') undo(); else if (k === 'r') load(lvl); else if ((k === 'Enter' || k === ' ') && won && lvl < SOKO.length - 1) load(lvl + 1); },
+        update(dt) { if (won) wonT += dt; },
+        draw() {
+          g.fillStyle = '#1c1917'; g.fillRect(0, 0, W, H); if (!map) return;
+          const cols = Math.max(...map.map((r) => r.length)), rows = map.length; const S = Math.floor(Math.min((W - 20) / cols, (H - 20) / rows)); const ox = (W - S * cols) / 2, oy = (H - S * rows) / 2;
+          map.forEach((r, y) => r.forEach((c, x) => { const X = ox + x * S, Y = oy + y * S; if (c === 1) { const near = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]].some(([dx, dy]) => map[y + dy]?.[x + dx] === 0); if (!near) return; g.fillStyle = '#7c2d12'; g.fillRect(X, Y, S, S); g.fillStyle = '#9a3412'; for (let i = 0; i < 2; i++) { g.fillRect(X + 2, Y + 2 + i * S / 2, S / 2 - 3, S / 2 - 4); g.fillRect(X + S / 2 + 1, Y + 2 + i * S / 2, S / 2 - 3, S / 2 - 4); } } else if (c === 0) { g.fillStyle = (x + y) % 2 ? '#d6d3d1' : '#e7e5e4'; g.fillRect(X, Y, S, S); } }));
+          goals.forEach(([x, y]) => { const X = ox + x * S + S / 2, Y = oy + y * S + S / 2; g.strokeStyle = '#16a34a'; g.lineWidth = Math.max(2, S / 12); g.beginPath(); g.arc(X, Y, S * 0.22, 0, 7); g.stroke(); g.fillStyle = 'rgba(22,163,74,.25)'; g.fill(); });
+          boxes.forEach(([x, y]) => { const X = ox + x * S, Y = oy + y * S, on = isGoal(x, y), p = S * 0.08; g.fillStyle = on ? '#15803d' : '#b45309'; g.fillRect(X + p, Y + p, S - 2 * p, S - 2 * p); g.strokeStyle = on ? '#86efac' : '#fbbf24'; g.lineWidth = Math.max(2, S / 14); g.strokeRect(X + p * 1.8, Y + p * 1.8, S - 3.6 * p, S - 3.6 * p); g.beginPath(); g.moveTo(X + p * 1.8, Y + p * 1.8); g.lineTo(X + S - p * 1.8, Y + S - p * 1.8); g.moveTo(X + S - p * 1.8, Y + p * 1.8); g.lineTo(X + p * 1.8, Y + S - p * 1.8); g.stroke(); });
+          const px = ox + pl[0] * S + S / 2, py = oy + pl[1] * S + S / 2; g.fillStyle = 'rgba(0,0,0,.2)'; g.beginPath(); g.ellipse(px, py + S * 0.3, S * 0.25, S * 0.08, 0, 0, 7); g.fill(); g.fillStyle = '#2563eb'; g.beginPath(); g.arc(px, py, S * 0.3, 0, 7); g.fill(); g.fillStyle = '#fde68a'; g.beginPath(); g.arc(px, py - S * 0.05, S * 0.18, 0, 7); g.fill(); g.fillStyle = '#111'; g.fillRect(px + face * S * 0.04 - S * 0.08, py - S * 0.1, S * 0.05, S * 0.06); g.fillRect(px + face * S * 0.04 + S * 0.04, py - S * 0.1, S * 0.05, S * 0.06);
+          g.fillStyle = 'rgba(255,255,255,.6)'; g.font = 'bold 14px system-ui'; g.fillText(`Level ${lvl + 1}`, 12, 22);
+          if (won) banner(g, W, H, '🎉 Solved!', lvl < SOKO.length - 1 ? `${moves} moves — Enter / ▶ for the next level` : `${moves} moves — you finished every level!`);
+        },
+      };
+    });
+    return () => cleanupG && cleanupG();
   } };
 
   Object.entries(GAMES).forEach(([k, gm]) => { if (!MS.commands.some((c) => c.id === 'game-' + k)) MS.command({ id: 'game-' + k, title: 'Play ' + gm.name, icon: gm.icon, group: 'Arcade', run: () => MS.go('arcade', k) }); });
