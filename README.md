@@ -38,6 +38,7 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | 🖼 | Photo Lab | Adjustments, filters, crop/rotate, PNG/JPEG export |
 | 🎙 | Recorder | Voice memos with live waveform, saved to Files |
 | 💻 | Code Lab | HTML/CSS/JS playground with live preview, console, templates |
+| 🛢 | SQL Lab | Real SQLite (WebAssembly) with a sample store DB, schema browser, multi-statement runner, result charts, CSV import/export, open/save .sqlite, history, 12 graded SQL challenges |
 | 🔌 | Logic Lab | Digital circuit simulator: gates, switches, clocks, flip-flops, LEDs, 7-segment, truth tables, examples |
 | ⌨ | Terminal | mega-sh shell with files, pipes and redirects |
 | 🗺 | Maps | OpenStreetMap, search, saved places, multi-stop routing with turn-by-turn, GPX export |

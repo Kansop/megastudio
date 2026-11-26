@@ -136,3 +136,4 @@ body.collapsed .search-btn::before{content:"🔎"}
 .pk-l{font-size:10px;color:#889;pointer-events:none}.pk-nolabel .pk-l{display:none}
 .pk-w.pk-down{background:linear-gradient(#c9bbff,#a78bfa)}.pk-b.pk-down{background:linear-gradient(#8b6cff,#5b3fd6)}
 .pk.pk-bad{background:#ff8a8a!important}
+@media (max-width:700px){.sql-side{display:none!important}}
