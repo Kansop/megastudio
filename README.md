@@ -3,7 +3,7 @@
 **An all-in-one productivity + creativity studio that runs entirely in your browser.**
 Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code playground, an arcade, a file manager and more — offline-capable, installable, no account, no server.
 
-**50 apps + 35 arcade games**, all checked by a headless smoke test (`node tests/smoke.mjs`).
+**51 apps + 35 arcade games**, all checked by a headless smoke test (`node tests/smoke.mjs`).
 
 ### ▶ Live app: https://kansop.github.io/megastudio/
 
@@ -31,6 +31,7 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | 🎨 | Paint | Layers, brushes, shapes, flood fill, text, eyedropper, symmetry, PNG export |
 | 🎹 | Music Studio | Drum machine + lead + bass sequencer, mixer, live recording, Web MIDI, Euclidean rhythms, WAV & MIDI export |
 | 🎹 | Piano | 3-octave playable piano (mouse, multi-touch, computer keys, Web MIDI, sustain), falling-notes song tutor with 8 songs, wait/real-time modes & accuracy, recorder with MIDI export |
+| 🎛 | Synth | Polyphonic subtractive synth: 2 oscillators + sub + noise, ADSR, resonant filter with envelope, LFO (pitch/filter/amp), mono glide, delay & reverb, 6-mode arpeggiator, 12 presets, randomize, saved patches, 2-octave touch/computer/MIDI keyboard, live scope + spectrum |
 | 🎸 | Music Tools | Chromatic tuner (mic pitch detection), metronome with tap tempo & subdivisions, piano chord/scale explorer with diatonic chords, 40 guitar chord diagrams, circle of fifths, interval ear training |
 | 🧠 | Whiteboard | Infinite canvas mind maps & flows, connectors, pen, auto-arrange, SVG/PNG export |
 | 🎤 | Slides | Markdown decks, 6 themes, presenting, speaker notes, HTML/PDF export |
