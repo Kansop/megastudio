@@ -39,6 +39,7 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | 🎙 | Recorder | Voice memos with live waveform, saved to Files |
 | 💻 | Code Lab | HTML/CSS/JS playground with live preview, console, templates |
 | ⏰ | Clock | World clock with analog faces, time-zone meeting planner (best-overlap finder), alarms with repeat days/snooze/notifications, multiple countdown timers, stopwatch with laps and CSV |
+| 🌈 | Shader Lab | Live GLSL (WebGL2) playground with Shadertoy-style uniforms, 9 presets incl. raymarched SDF scene, Mandelbrot zoom and fire, inline compile errors, auto uniform sliders, PNG snapshot, WebM recording, saved shaders |
 | 🛢 | SQL Lab | Real SQLite (WebAssembly) with a sample store DB, schema browser, multi-statement runner, result charts, CSV import/export, open/save .sqlite, history, 12 graded SQL challenges |
 | 🔌 | Logic Lab | Digital circuit simulator: gates, switches, clocks, flip-flops, LEDs, 7-segment, truth tables, examples |
 | ⌨ | Terminal | mega-sh shell with files, pipes and redirects |
