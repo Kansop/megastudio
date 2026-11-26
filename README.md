@@ -3,7 +3,7 @@
 **An all-in-one productivity + creativity studio that runs entirely in your browser.**
 Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code playground, an arcade, a file manager and more — offline-capable, installable, no account, no server.
 
-**52 apps + 36 arcade games**, all checked by a headless smoke test (`node tests/smoke.mjs`).
+**53 apps + 36 arcade games**, all checked by a headless smoke test (`node tests/smoke.mjs`).
 
 ### ▶ Live app: https://kansop.github.io/megastudio/
 
@@ -60,6 +60,7 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | ♞ | Chess Trainer | 420 verified mate-in-1/2/3 puzzles with Elo rating & streaks, Puzzle Rush, 30-line opening explorer with quiz mode, endgame drills vs engine, analysis board with FEN |
 | 🧠 | Mind Gym | 6 brain-training drills (mental math, digit span, reaction time, Stroop, Schulte grid, visual memory) with personal bests, sparkline progress and a daily-workout checklist |
 | 🌐 | Geo Quiz | Flags & capitals of 136 countries: 4 quiz modes (flag, capital, reverse capital, type-in), continent filters, 60-second sprint, mastery tracking, review-missed rounds, searchable study atlas |
+| 🐣 | Pocket Pet | Real-time virtual pet (4 species) whose needs drift even while closed: feed from a coin-priced menu, pet, wash, sleep, medicine; catch-the-star mini-game earns coins; grows Egg → Baby → Kid → Teen → Adult with mood-driven animation |
 | 🕹 | Arcade | 36 games: Snake, 2048, Blocks, Minesweeper, Breakout, Memory, Flappy, Pong, Sudoku, Connect Four, Word Guess, Tic-Tac-Toe, Chess, Asteroids, Space Invaders, Solitaire, Reversi, Checkers, Simon, Turbo Racer, Pixel Quest, Tower Defense, Gem Swap, Mini Golf, Battleship, Maze Muncher, Bubble Shooter, Stack Tower, Sky Hopper, Picross, Fruit Slice, Air Hockey, Hop Road, Pinball, Sokoban (16 solver-verified levels), 8-Ball Pool (vs CPU or 2 players) |
 | ⚙️ | Settings | 7 themes, accent color, text size, full backup/restore |
 
