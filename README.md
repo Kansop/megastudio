@@ -9,8 +9,8 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | | App | Highlights |
 |---|---|---|
 | 🏠 | Dashboard | Greeting & clock, jump back in, agenda, boards, today's focus & habits, arcade bests, grouped app launcher, onboarding tour |
-| 📝 | Notes | Markdown with live preview, `[[wikilinks]]`, #tags, tasks, templates, daily notes, images, print/PDF |
-| ✍️ | Writer | Rich-text word processor: templates (MLA essay, letter, résumé, lab report), tables, images, find/replace, outline, readability, focus mode, DOC/PDF/HTML/MD export |
+| 📝 | Notes | Markdown with live preview, on-device AI assistant (summarize, rewrite, continue, translate), `[[wikilinks]]`, #tags, tasks, templates, daily notes, images, print/PDF |
+| ✍️ | Writer | Rich-text word processor with on-device AI rewrite/summarize: templates (MLA essay, letter, résumé, lab report), tables, images, find/replace, outline, readability, focus mode, DOC/PDF/HTML/MD export |
 | 📋 | Boards | Multiple kanban boards, drag & drop, labels, due dates, checklists |
 | 📅 | Calendar | Month / week / agenda, recurring events, board due dates, `.ics` import/export |
 | 📊 | Sheets | Formula engine (50+ functions), tabs, formatting, CSV, charts, undo, fill-down, sort |

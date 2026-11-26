@@ -140,7 +140,7 @@ console.log('Hello from MegaStudio');
           h('button.btn.danger', { on: { click: async () => { close(); if (await MS.confirm('Delete this note?', n.title, 'Delete')) { s.data.notes = s.data.notes.filter((x) => x !== n); s.touch(); MS.go('notes'); renderList(); } } } }, '🗑 Delete')));
       }
       const menuBtn = h('button.btn', { on: { click: () => cur() && noteMenu(cur()) } }, '⋯ Note');
-      MS.setActions(menuBtn);
+      MS.setActions(h('button.btn', { title: 'AI writing assistant (on-device)', on: { click: () => { const a = ta.selectionStart, b = ta.selectionEnd; const sel = a !== b; const text = sel ? ta.value.slice(a, b) : ta.value; MS.ai.assist({ text, title: sel ? 'AI · selection' : 'AI · whole note', onReplace: (r) => { if (sel) ta.setRangeText(r, a, b, 'select'); else ta.value = r; ta.dispatchEvent(new Event('input')); }, onInsert: (r) => { const at = sel ? b : ta.value.length; ta.setRangeText('\n\n' + r, at, at, 'end'); ta.dispatchEvent(new Event('input')); } }); } } }, '🧠 AI'), menuBtn);
       setMode(mode);
       return {
         route(args) {

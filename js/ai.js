@@ -28,7 +28,7 @@
       const initProgressCallback = (p) => onProgress(p.progress ?? 0, p.text || '');
       if (engine) { try { await engine.unload(); } catch {} engine = null; current = null; }
       try { engine = await L.CreateWebWorkerMLCEngine(new Worker(WORKER_URL, { type: 'module' }), id, { initProgressCallback }); }
-      catch (e) { if (/worker/i.test(String(e))) engine = await L.CreateMLCEngine(id, { initProgressCallback }); else throw e; }
+      catch (e) { if (/memory|device (was )?lost|quota/i.test(String(e?.message || e))) throw e; console.warn('WebLLM worker failed, retrying on main thread', e); engine = await L.CreateMLCEngine(id, { initProgressCallback }); }
       current = m.key; return engine;
     })();
     try { return await loading; } finally { loading = null; }
@@ -44,5 +44,29 @@
   }
   function stop() { try { engine?.interruptGenerate(); } catch {} }
   async function remove(m) { const L = await getLib(); if (current === m.key) { try { await engine.unload(); } catch {} engine = null; current = null; } await L.deleteModelAllInfoInCache(idFor(m)); }
-  MS.ai = { MODELS, gpuInfo, load, chat, stop, remove, isCached, idFor, memFor, get current() { return current; }, get generating() { return generating; }, get loading() { return !!loading; } };
+  /* ---------- writing assistant (used by Notes & Writer) ---------- */
+  async function pickedModel() { const st = await MS.store('botchat', () => ({ chats: [], active: 'ai', state: {} })); const k = st.data.state?.ai?.model; return MODELS.find((m) => m.key === k) || MODELS.find((m) => m.def); }
+  const ACTIONS = [['✨ Improve', 'Rewrite the text to be clearer and more engaging. Keep the meaning and roughly the same length.'], ['✅ Fix grammar', 'Fix spelling, grammar and punctuation. Change nothing else.'], ['📝 Summarize', 'Summarize the text as a few concise bullet points.'], ['✂️ Shorter', 'Make the text about half as long while keeping the key points.'], ['➕ Longer', 'Expand the text with more detail and examples.'], ['👔 Formal', 'Rewrite the text in a professional, formal tone.'], ['😊 Casual', 'Rewrite the text in a friendly, casual tone.'], ['➡️ Continue', 'Continue writing from where the text ends, in the same style. Output only the continuation.'], ['💡 Ideas', 'Brainstorm 5 ideas related to this text as a bulleted list.']];
+  function assist({ text, onReplace, onInsert, title = 'AI writing assistant' }) {
+    const { h } = MS; const out = h('div.md', { style: { minHeight: '120px', maxHeight: '45vh', overflow: 'auto', padding: '10px 12px', background: 'var(--panel2)', borderRadius: '10px', border: '1px solid var(--line)' } }, h('span.muted', text.trim() ? 'Pick an action — the AI runs on your device.' : 'Write or select some text first, or type an instruction below.'));
+    const status = h('div.small.muted'); let result = '', running = false;
+    const custom = h('input.input', { placeholder: 'Or type an instruction, e.g. "translate to Spanish"…', style: { flex: 1 }, on: { keydown: (e) => { if (e.key === 'Enter' && custom.value.trim()) run(custom.value.trim()); } } });
+    async function run(instr) {
+      if (running) return; running = true; result = ''; out.textContent = ''; actRow.style.opacity = 0.5;
+      try {
+        const g = await gpuInfo(); if (!g.ok) throw new Error(g.why + ' Real AI needs WebGPU (Chrome/Edge, or Safari on iOS/macOS 26+).');
+        const m = await pickedModel();
+        if (current !== m.key) { if (!(await isCached(m)) && !(await MS.confirm(`Download ${m.name}?`, 'One-time download, cached on this device for offline use. Change models in Bot Chat → Real AI.', 'Download'))) throw new Error('Model not downloaded.'); await load(m, (p, t) => (status.textContent = `${Math.round(p * 100)}% · ${t.replace(/\[.*?\]\s*/, '').slice(0, 90)}`)); }
+        status.textContent = `🧠 ${m.name} is writing…`;
+        const prompt = 'Instruction: ' + instr + '\n\nText:\n<<<\n' + text.slice(0, 6000) + '\n>>>';
+        const r = await chat([{ role: 'system', content: 'You are a precise writing assistant. Follow the instruction and output only the resulting text, without preamble or quotes.' }, { role: 'user', content: prompt }], (t) => { result = t; out.innerHTML = MS.md(t); out.scrollTop = 1e9; }, { temperature: 0.5, max_tokens: 900 });
+        result = r.text.trim(); status.textContent = `Done · ${m.name}`;
+      } catch (e) { out.textContent = '⚠️ ' + (e.message || e); status.textContent = ''; }
+      running = false; actRow.style.opacity = 1;
+    }
+    const actRow = h('div.row', { style: { flexWrap: 'wrap', gap: '6px' } }, ACTIONS.map(([l, instr]) => h('button.btn.sm', { on: { click: () => run(instr) } }, l)));
+    const close = MS.modal(h('div.col.modal-wide', { style: { gap: '10px' } }, h('h2', '🧠 ' + title), actRow, h('div.row', custom, h('button.btn.sm', { on: { click: () => custom.value.trim() && run(custom.value.trim()) } }, 'Run')), out, status,
+      h('div.row', { style: { flexWrap: 'wrap' } }, h('button.btn', { on: { click: () => { if (running) stop(); } } }, '■ Stop'), h('div.spacer'), h('button.btn', { on: { click: () => { if (result) { navigator.clipboard?.writeText(result); MS.toast('Copied'); } } } }, '📋 Copy'), onInsert ? h('button.btn', { on: { click: () => { if (result) { onInsert(result); close(); } } } }, '⤵ Insert below') : null, onReplace ? h('button.btn.primary', { on: { click: () => { if (result) { onReplace(result); close(); } } } }, '↺ Replace') : null)), { onClose: () => running && stop() });
+  }
+  MS.ai = { assist, pickedModel, MODELS, gpuInfo, load, chat, stop, remove, isCached, idFor, memFor, get current() { return current; }, get generating() { return generating; }, get loading() { return !!loading; } };
 })();

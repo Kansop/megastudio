@@ -1,0 +1,10 @@
+import puppeteer from 'puppeteer-core'; import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path'; import url from 'node:url';
+const root = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '..');
+const T = { '.js': 'text/javascript', '.css': 'text/css', '.html': 'text/html' };
+const srv = http.createServer((q, r) => { let p = decodeURIComponent(q.url.split('?')[0]); if (p.endsWith('/')) p += 'index.html'; const f = path.join(root, p); if (!fs.existsSync(f)) { r.writeHead(404); return r.end(); } r.writeHead(200, { 'content-type': T[path.extname(f)] || '' }); fs.createReadStream(f).pipe(r); }).listen(0);
+const b = await puppeteer.launch({ executablePath: '/usr/bin/google-chrome', headless: 'new', protocolTimeout: 1200000, args: ['--no-sandbox', '--enable-unsafe-webgpu', '--enable-features=Vulkan,WebGPU', '--use-webgpu-adapter=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--disable-gpu-watchdog', '--disable-features=GpuWatchdog'] });
+const p = await b.newPage();
+p.on('pageerror', (e) => console.log('PAGEERROR', e.message)); p.on('console', (m) => console.log('C', m.text().slice(0, 160)));
+await p.goto(`http://127.0.0.1:${srv.address().port}/#/dashboard`); await p.waitForFunction(() => window.MS && MS.booted);
+const out = await p.evaluate(async () => { try { await MS.ai.gpuInfo(); const L = await import('https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.89/+esm'); const e = await L.CreateMLCEngine('SmolLM2-360M-Instruct-q4f32_1-MLC', { initProgressCallback: (x) => { if (x.progress === 1 || /shader|Loading GPU/i.test(x.text)) console.log(x.text.slice(0, 120)); } }); console.log('loaded'); let n = 0, txt = ''; const s = await e.chat.completions.create({ messages: [{ role: 'user', content: 'Say hi.' }], stream: true, max_tokens: 12 }); for await (const c of s) { const d = c.choices?.[0]?.delta?.content; if (d) { n++; txt += d; console.log('tok', JSON.stringify(d)); } } return 'OK ' + n + ' ' + txt; } catch (e) { return 'ERR ' + (e.message || e); } });
+console.log('RESULT', out); await b.close(); srv.close();
