@@ -27,6 +27,7 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | 📬 | Inbox | Local email client: folders, labels, threads, snooze, drafts, attachments, bot replies |
 | 🎨 | Paint | Layers, brushes, shapes, flood fill, text, eyedropper, symmetry, PNG export |
 | 🎹 | Music Studio | Drum machine + lead + bass sequencer, mixer, live recording, Web MIDI, Euclidean rhythms, WAV & MIDI export |
+| 🎹 | Piano | 3-octave playable piano (mouse, multi-touch, computer keys, Web MIDI, sustain), falling-notes song tutor with 8 songs, wait/real-time modes & accuracy, recorder with MIDI export |
 | 🎸 | Music Tools | Chromatic tuner (mic pitch detection), metronome with tap tempo & subdivisions, piano chord/scale explorer with diatonic chords, 40 guitar chord diagrams, circle of fifths, interval ear training |
 | 🧠 | Whiteboard | Infinite canvas mind maps & flows, connectors, pen, auto-arrange, SVG/PNG export |
 | 🎤 | Slides | Markdown decks, 6 themes, presenting, speaker notes, HTML/PDF export |
