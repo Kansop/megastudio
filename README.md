@@ -45,6 +45,7 @@ Notes, kanban boards, calendar, spreadsheets, paint, a music studio, a code play
 | ⚛️ | Periodic Table | 118 elements, color modes, electron configs, Bohr model, molar-mass calculator, quiz |
 | 📈 | Graphing Calc | Explicit/implicit/polar/parametric plots, inequalities, sliders, derivatives, roots/extrema/intersections, integrals, tables, share links |
 | 🧰 | Toolbox | 15 utilities: calculator, QR codes, units, JSON, regex, colors, encoders, hashes, passwords, diff… |
+| 🔐 | Vault | Password manager encrypted with AES-256-GCM (PBKDF2 310k), TOTP 2FA authenticator (RFC 6238, otpauth:// import), secure notes, generator & passphrases, strength/crack-time meter, health report, auto-lock, encrypted backups |
 | 🗂 | Files | IndexedDB file system with folders, previews, editing |
 | ⏳ | Sand Lab | Falling-sand simulator: 17 elements (sand, water, oil, fire, lava, acid, plants, ice, snow, gunpowder, cloner…) with reactions, 5 scenes, PNG export |
 | 🧪 | Physics Lab | Verlet sandbox: balls, boxes, ropes, cloth, ragdolls, wheels, blasts |

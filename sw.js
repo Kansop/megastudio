@@ -1,5 +1,5 @@
 /* MegaStudio service worker: precache app shell, stale-while-revalidate for everything same-origin */
-const VERSION = 'megastudio-90e6495dd0';
+const VERSION = 'megastudio-b86c82c12f';
 const SHELL = [
   './',
   'css/app.css',
@@ -56,6 +56,7 @@ const SHELL = [
   'js/apps/terminal.js',
   'js/apps/toolbox.js',
   'js/apps/typing.js',
+  'js/apps/vault.js',
   'js/apps/video.js',
   'js/apps/voxel.js',
   'js/apps/weather.js',
